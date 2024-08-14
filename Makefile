@@ -14,10 +14,13 @@ all: build
 .SILENT: isbn-search
 isbn-search: isbn-search.lisp
 	ros run -Q \
+		-s cl-ascii-table \
+		-s cl-cookie \
+		-s cl-ppcre \
+		-s clingon \
 		-s dexador \
 		-s lquery \
 		-s plump \
-		-s cl-ascii-table \
 		-- \
 		--load $< \
 		--eval '(save-lisp-and-die "$@" :toplevel #''isbn:main :executable t :compression t)'

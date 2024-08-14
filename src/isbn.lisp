@@ -1,0 +1,53 @@
+(in-package :cl-user)
+(defpackage :isbn.search
+  (:use :cl)
+  (:local-nicknames (:ascii-table :ascii-table)
+                    (:cl-cookie   :cookie)
+                    (:cl-ppcre    :ppcre)
+                    (:clingon     :clingon)
+                    (:dex         :dexador)
+                    (:lquery      :lquery)
+                    (:plump       :plump))
+  (:export #:main))
+(in-package :isbn.search)
+
+(defun top-level/options ()
+  "Returns the options for the top-level command"
+  (list
+   (clingon:make-option
+    :string
+    :description "Data to pass in the Cookie header. Data should be in the format `NAME1=VALUE1; NAME2=VALUE2' or a single filename."
+    :short-name #\b
+    :long-name "cookie"
+    :key :cookie)))
+
+(defun top-level/handler (cmd)
+  "Top-level handler"
+  (let* ((args (clingon:command-arguments cmd))
+         (isbn (car args))
+         (cookie (clingon:getopt cmd :cookie))
+         (url (concatenate 'string "https://isbnsearch.org/isbn/" isbn))
+         (req (dex:get url))
+         (parsed (lquery:$ (lquery:initialize req)))
+         (attrs (mapcar (lambda (s) (cl-ppcre:split ":\\s" s))
+                        (coerce (lquery:$ parsed ".bookinfo p" (text)) 'list)))
+         (names (mapcar #'car attrs))
+         (vals (mapcar #'second attrs))
+         (rows (reverse (cdr (reverse (mapcar #'list names vals)))))
+         (tbl (ascii-table:make-table '("ATTRIBUTE" "VALUE"))))
+    (loop for row in rows
+          do (eval `(ascii-table:add-row ,tbl ',row))
+          finally (ascii-table:display tbl))))
+
+(defun top-level/command ()
+  "Creates and returns the top-level command"
+  (clingon:make-command
+   :name "isbn.search"
+   :description "Search for an ISBN on `isbnsearch.org'."
+   :usage "[-b <DATA|FILENAME>] <ISBN>"
+   :options (top-level/options)
+   :handler #'top-level/handler))
+
+(defun main ()
+  (let ((app (top-level/command)))
+    (clingon:run app)))
