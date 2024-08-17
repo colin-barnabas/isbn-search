@@ -2,6 +2,10 @@
   (:use :cl :asdf))
 (in-package #:isbn-search-system)
 
+#+sb-core-compression
+(defmethod asdf:perform ((o asdf:image-op) (c asdf:system))
+  (uiop:dump-image (asdf:output-file o c) :executable t :compression t))
+
 (asdf:defsystem "isbn.search"
   :name "isbn.search"
   :long-name "isbn.search"
