@@ -7,7 +7,8 @@
   :long-name "isbn.search"
   :description "Search for ISBN on `isbsearch.org'."
   :version "0.1"
-  :depends-on (:cl-ascii-table
+  :depends-on (:arrow-macros
+               :cl-ascii-table
                :cl-cookie
                :cl-ppcre
                :clingon
