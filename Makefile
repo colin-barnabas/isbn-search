@@ -7,21 +7,18 @@
 
 SHELL = /bin/zsh
 .SHELLFLAGS = -o local_options -o rc_quotes -c
+VPATH = ./src/:./
 
 .PHONY: all
 all: build
 
 .SILENT: isbn-search
-isbn-search: isbn-search.lisp
-	ros run -Q \
-		-s dexador \
-		-s lquery \
-		-s plump \
-		-s cl-ascii-table \
-		-- \
+isbn.search: isbn.search.asd isbn.lisp
+	ros run -- \
 		--load $< \
-		--eval '(save-lisp-and-die "$@" :toplevel #''isbn:main :executable t :compression t)'
+		--eval '(ql:quickload :isbn.search)' \
+		--eval '(asdf:make :isbn.search)' --eval '(quit)'
 
-build: isbn-search
+build: isbn.search
 
 # end
