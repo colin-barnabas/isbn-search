@@ -13,10 +13,19 @@
 
 (defun top-level/options ()
   "Returns the options for the top-level command"
+  (setf clingon:*default-options* (cdr clingon:*default-options*))
+  (pushnew (clingon:make-option
+            :flag
+            :description "Display usage and exit"
+            :long-name "help"
+            :short-name #\h
+            :key :clingon.help.flag)
+           clingon:*default-options*)
   (list
    (clingon:make-option
     :string
-    :description "Data to pass in the Cookie header. Data should be in the format `NAME1=VALUE1; NAME2=VALUE2' or a single filename."
+    :description "Data to pass in the Cookie header. Data should be in the
+    format `NAME1=VALUE1; NAME2=VALUE2' or a single filename."
     :short-name #\b
     :long-name "cookie"
     :key :cookie)))
