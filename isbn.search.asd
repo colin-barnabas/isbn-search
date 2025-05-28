@@ -14,10 +14,10 @@
   :depends-on (:arrow-macros
                :cl-ascii-table
                :cl-cookie
-               :cl-ppcre
                :clingon
                :dexador
-               :lquery)
+               :lquery
+               :uiop)
   :components ((:module "search"
                 :pathname #P"src/"
                 :components ((:file "isbn"))))
