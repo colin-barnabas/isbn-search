@@ -3,20 +3,28 @@
   (:use :cl :arrow-macros)
   (:local-nicknames (:ascii-table :ascii-table)
                     (:cl-cookie   :cookie)
-                    (:cl-ppcre    :ppcre)
                     (:clingon     :clingon)
                     (:dex         :dexador)
                     (:lquery      :lquery)
-                    (:plump       :plump))
+                    (:uiop        :uiop))
   (:export #:main))
 (in-package :isbn.search)
 
 (defun top-level/options ()
   "Returns the options for the top-level command"
+  (setf clingon:*default-options* (cdr clingon:*default-options*))
+  (pushnew (clingon:make-option
+            :flag
+            :description "Display usage and exit"
+            :long-name "help"
+            :short-name #\h
+            :key :clingon.help.flag)
+           clingon:*default-options*)
   (list
    (clingon:make-option
     :string
-    :description "Data to pass in the Cookie header. Data should be in the format `NAME1=VALUE1; NAME2=VALUE2' or a single filename."
+    :description "Data to pass in the Cookie header. Data should be in the
+    format `NAME1=VALUE1; NAME2=VALUE2' or a single filename."
     :short-name #\b
     :long-name "cookie"
     :key :cookie)))
@@ -32,7 +40,9 @@
                     ("Cookie" . ,cookie)))
          (req (dex:get url :headers headers))
          (parsed (lquery:$ (lquery:initialize req)))
-         (attrs (mapcar (lambda (s) (cl-ppcre:split ":\\s" s))
+         (attrs (mapcar (lambda (s)
+                          (arrow-macros:->> (uiop:split-string s :separator ":")
+                            (mapcar (lambda (x) (string-trim " " x)))))
                         (coerce (lquery:$ parsed ".bookinfo p" (text))
                                 'list)))
          (title (pushnew `("Title" ,@(-> (lquery:$ parsed ".bookinfo h1" (text))
