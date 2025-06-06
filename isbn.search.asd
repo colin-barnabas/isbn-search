@@ -17,6 +17,7 @@
                :clingon
                :dexador
                :lquery
+               :plump
                :uiop)
   :components ((:module "search"
                 :pathname #P"src/"

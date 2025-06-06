@@ -6,6 +6,7 @@
                     (:clingon     :clingon)
                     (:dex         :dexador)
                     (:lquery      :lquery)
+                    (:plump       :plump)
                     (:uiop        :uiop))
   (:export #:main))
 (in-package :isbn.search)
